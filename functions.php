@@ -53,19 +53,81 @@ function add_theme_menu_item()
 
 add_action("admin_menu", "add_theme_menu_item");
 
+function display_framexs_themes_location_element()
+{
+	$ftl = get_option('framexs_themes_location');
+	$exists = '存在していません。確認してください。';
+	require_once(ABSPATH . 'wp-admin/includes/file.php');//WP_Filesystemの使用
+	if ( WP_Filesystem() ) {//WP_Filesystemの初期化
+		global $wp_filesystem;//$wp_filesystemオブジェクトの呼び出し
+		if($wp_filesystem->exists($ftl)){
+			$exists = '';
+		}
+	}
+	?>
+		<input type="text" name="framexs_themes_location" id="framexs_themes_location" value="<?php echo $ftl; ?>" />
+		
+    <?php
+	echo $exists;
+
+}
 function display_theme_element()
 {
+	$framexs_themes = array();
+	$ftl = get_option('framexs_themes_location');
+	require_once(ABSPATH . 'wp-admin/includes/file.php');//WP_Filesystemの使用
+	if ( WP_Filesystem() ) {//WP_Filesystemの初期化
+		global $wp_filesystem;//$wp_filesystemオブジェクトの呼び出し
+		if($wp_filesystem->exists($ftl)){
+			$exists = '';
+			foreach($wp_filesystem->dirlist($ftl) as $item){
+				$theme_dir_name = $item['name'];
+				$theme_location = $ftl.'/'.$theme_dir_name;
+				$ftml_location = $theme_location.'/main.ftml';
+				if($wp_filesystem->exists($ftml_location)){
+					$ftml = $wp_filesystem->get_contents($ftml_location);
+					$dom = new SimpleXMLElement($ftml);
+					$checked = '';
+					if($theme_dir_name === get_option('framexs_theme')) {
+						$checked = 'checked=""';
+					}
+					array_push($framexs_themes, array(
+						'dir'=>$theme_dir_name,
+						'name'=>$dom->infomation->name,
+						'checked'=>$checked
+					));
+				}
+			}
+		}
+	}
 	?>
-    	<input type="text" name="framexs_theme" id="framexs_theme" value="<?php echo get_option('framexs_theme'); ?>" />
+		<div>
+			<?php foreach($framexs_themes as $framexs_theme) {
+			?>
+			<ul>
+				<li>
+					<div><input type="radio" name="framexs_theme" id="framexs_theme" value="<?php echo $framexs_theme['dir']; ?>" <?php echo $framexs_theme['checked']?> /></div>
+					<div class="text">
+						<div class="name"><?php echo $framexs_theme['name'];?></div>
+						<div class="description"></div>
+					</div>
+				</li>
+			</ul>
+			<?php } ?>
+		</div>
     <?php
 }
+
 function display_theme_panel_fields()
 {
 	add_settings_section("section", "All Settings", null, "theme-options");
 	
-    add_settings_field("framexs_theme", "Framexs theme name", "display_theme_element", "theme-options", "section");
+    add_settings_field("framexs_themes_location", "Framexs themes location", "display_framexs_themes_location_element", "theme-options", "section");
+    register_setting("section", "framexs_themes_location");
 
+    add_settings_field("framexs_theme", "Framexs theme", "display_theme_element", "theme-options", "section");
     register_setting("section", "framexs_theme");
+
 }
 
 add_action("admin_init", "display_theme_panel_fields");

@@ -11,7 +11,7 @@ function get_framexs($pagetype) {
 	if(get_option("framexs_theme")) {
 		echo "<?xml-stylesheet type=\"application/xml\" href=\""."/wordpress/wp-content/themes/framexs/framexs.xsl"."\"?>\n";
 		echo "<?framexs.skeleton /framexs/".get_option('framexs_theme')."/main.ftml"."?>\n";
-		echo "<?framexs.properties /properties/".$pagetype.".properties?>\n";
+		echo "<?framexs.properties /properties/".$pagetype.".fpml?>\n";
 	}
 }
 

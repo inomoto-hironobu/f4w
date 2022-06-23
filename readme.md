@@ -1,12 +1,14 @@
 Framexs for WordPress
 ---
-Framexsを使うためのWordPressテーマ
+Framexsを使うためのWordPressテーマです。
 
-Contributors: INOMOTO Hironobu
-Tested up to: 0.1
-Stable tag: 0.1
-License: MIT License
+設定パネルで、ディレクトリの設定を行うことでFramexsテーマ機能を使うことができます。
 
-GitでWordPressにインストールする
+Framexsテーマを収めているディレクトリの場所、propertiesファイルを収めているディレクトリの場所を設定します。
 
-FTMLなどはWordPressの外で用意する
+このことによってHTML設計、CSS、JavaScriptのセットをWordPressの外に出すことができ、
+例えば、スタティックサイトとWordPressサイトでスタイルを共有することができます。
+
+CMS固有の記述に縛られることなく、フロントエンジニアはコードの作製に専念できることを意味します。
+
+GitでWordPressにインストールすることもできます。

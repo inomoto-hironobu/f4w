@@ -5,7 +5,8 @@
  * @package Framexs
  * @since Framexs for WordPress 0.1
  */
-get_framexs("archive");
+global $pagetype;
+$pagetype = "archive";
 get_header();
 
 $description = get_the_archive_description();

@@ -10,10 +10,11 @@
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/
  *
  * @package WordPress
- * @subpackage Twenty_Twenty
+ * @subpackage Framexs
  * @since Twenty Twenty 1.0
  */
-echo get_framexs("index");
+global $pagetype;
+$pagetype = "home";
 get_header();
 ?>
 <main id="main">

@@ -5,7 +5,8 @@
  * @package Framexs
  * @since Framexs 0.1
  */
-
+global $pagetype;
+$pagetype = "search";
 get_header();
 
 if ( have_posts() ) {

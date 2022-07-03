@@ -6,15 +6,6 @@
  * @since Framexs 0.1
  */
 
-function get_framexs($pagetype) {
-	echo "<?xml version=\"1.0\"?>\n";
-	if(get_option("framexs_theme")) {
-		echo "<?xml-stylesheet type=\"application/xml\" href=\""."/wordpress/wp-content/themes/framexs/framexs.xsl"."\"?>\n";
-		echo "<?framexs.skeleton /framexs/".get_option('framexs_theme')."/main.ftml"."?>\n";
-		echo "<?framexs.properties /properties/".$pagetype.".fpml?>\n";
-	}
-}
-
 function xhtml($headers){
 	$headers["Content-Type"] = "application/xhtml+xml; charset=UTF-8";
 	return $headers;
@@ -22,6 +13,18 @@ function xhtml($headers){
 add_filter("wp_headers","xhtml");
 
 add_theme_support( 'title-tag' );
+
+function sidebar() {
+$permalink = $_SERVER['REQUEST_URI'];
+error_log($permalink);
+
+if($permalink == esc_url( home_url( '/sidebar.xhtml', 'relative') )){
+//echo 'test';
+include 'sidebar.php';
+exit();
+}
+}
+add_action("init","sidebar");
 
 //妥当なXHTMLが出力されるように
 function xbr( $content ) {
@@ -111,6 +114,8 @@ function display_theme_element()
 				array_push($framexs_themes, array(
 					'dir'=>$theme_dir_name,
 					'name'=>$dom->infomation->name,
+					'repository'=>$dom->infomation->repository,
+					'download'=>$dom->infomation->download,
 					'checked'=>$checked
 				));
 			}
@@ -121,12 +126,16 @@ function display_theme_element()
 			<ul>
 			<?php foreach($framexs_themes as $framexs_theme) {
 			?>
-			
 				<li>
 					<div><input type="radio" name="framexs_theme" id="framexs_theme" value="<?php echo $framexs_theme['dir']; ?>" <?php echo $framexs_theme['checked']?> /></div>
 					<div class="text">
 						<div class="name"><?php echo $framexs_theme['name'];?></div>
 						<div class="description"></div>
+						<div>
+							<input type="button" onclick="manage('delete','<?php echo $framexs_theme['name'];?>');" value="delete">
+							<input type="button" onclick="manage('fetch','<?php echo $framexs_theme['name'];?>');" value="fetch">
+							<input type="button" onclick="manage('pull','<?php echo $framexs_theme['name'];?>');" value="pull">
+						</div>
 					</div>
 				</li>
 			
@@ -246,11 +255,72 @@ function display_theme_panel_fields()
 	
 	add_settings_section("section", "upload", null, "filesystem-controll");
 
-	//add_settings_field("install_framexs_theme", "Framex Theme Install", "install_theme_element", "filesystem-controll", "section");
+	add_settings_field("install_framexs_theme", "Framex Theme Install", "install_theme_element", "filesystem-controll", "section");
 
-	//add_settings_field("upload_properties", "upload properites", "upload_properties_element", "filesystem-controll", "section");
+	add_settings_field("upload_properties", "upload properites", "upload_properties_element", "filesystem-controll", "section");
 
-	//add_settings_field("test", "test", "test", "filesystem-controll", "section");
+	add_settings_field("test", "test", "test", "filesystem-controll", "section");
 }
 
 add_action("admin_init", "display_theme_panel_fields");
+
+add_action('admin_print_scripts', 'myplugin_js_admin_header' );
+
+function myplugin_js_admin_header() // これはPHP関数
+{
+  // JavascriptのSACKライブラリをAjaxに使用
+  wp_print_scripts( array( 'sack' ));
+
+  // カスタムJavascript関数の定義
+?>
+<script type="text/javascript">
+//<![CDATA[
+function myplugin_ajax_elevation( lat_field, long_field, elev_field )
+{
+    jQuery(function($){
+    $('.more').click(function(){
+         var id = $(this).attr('data-id');
+
+		$.ajax({
+            type : "post",
+            data : {
+                action: 'get_post_content',
+                post_id: id,
+            },
+            url : "<?php echo admin_url('admin-ajax.php'); ?>",
+            success: function(res) {
+               // ここに受け取ったデータの処理を書く
+			   $('#post-' + id).html(res);
+            }
+        });
+    });
+});
+} // Javascript関数myplugin_ajax_elevation終わり
+//]]>
+</script>
+<?php
+// PHP関数myplugin_js_admin_header終わり
+}
+function manage_framexs_theme()
+{
+	$themes_location = get_option('framexs_themes_location');
+	$theme = $_POST['theme'];
+	$method = $_POST['method'];
+	$output = array();
+	$result_code = 0;
+	$json = null;
+	if($method == 'delete') {
+
+	} else if($method == 'fetch') {
+		exec("fetch.sh ".$themes_location.$theme, $output, $result_code);
+		$json = array('output'=>'"'.$output.'"', 'status_code'=>$result_code);
+	} else if($method == 'pull') {
+
+	} else if($method == 'download') {
+
+	}
+	echo $json;
+	wp_die();
+}
+add_action('wp_ajax_manage', 'manage_framexs_theme');
+?>

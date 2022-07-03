@@ -8,7 +8,8 @@
  * @subpackage Twenty_Twenty_One
  * @since Twenty Twenty-One 1.0
  */
-
+global $pagetype;
+$pagetype = "home";
 get_header();
 
 /* Start the Loop */

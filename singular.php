@@ -8,7 +8,8 @@
  * @subpackage Twenty_Twenty
  * @since Twenty Twenty 1.0
  */
-get_framexs("single");
+global $pagetype;
+$pagetype = "single";
 get_header();
 ?>
 <?php

@@ -12,16 +12,18 @@
  */
 global $pagetype;
 echo "<?xml version=\"1.0\"?>\n";
+echo '<!DOCTYPE framexs:resource SYSTEM "'.get_theme_file_uri('resource.dtd').'">';
 if(get_option("framexs_theme")) {
 	echo "<?xml-stylesheet type=\"application/xml\" href=\"".get_theme_file_uri("framexs.xsl")."\"?>\n";
-	echo "<?framexs.skeleton /framexs/".get_option('framexs_theme')."/main.ftml"."?>\n";
-	echo "<?framexs.properties /properties/".$pagetype.".xml?>\n";
+	echo "<?framexs.skeleton ".get_option('framexs_themes_path')."/".get_option('framexs_theme')."/main.ftml"."?>\n";
+	echo "<?framexs.properties ".get_option('properties_path')."/".$pagetype.".xml?>\n";
 	echo "<?framexs.resource sidebar ".home_url()."/sidebar.xhtml?>";
 }
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>
 <head>
 <title><?php echo wp_get_document_title();?></title>
+<?php wp_head();?>
 </head>
 <body>
 <main id="main">

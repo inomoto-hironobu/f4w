@@ -76,6 +76,7 @@ add_action("admin_menu", "add_theme_menu_item");
 function display_framexs_themes_location_element()
 {
 	$ftl = get_option('framexs_themes_location');
+	$ftp = get_option('framexs_themes_path');
 	$exists = '存在していません。確認してください。';
 	require_once(ABSPATH . 'wp-admin/includes/file.php');//WP_Filesystemの使用
 	if ( WP_Filesystem() ) {//WP_Filesystemの初期化
@@ -85,7 +86,12 @@ function display_framexs_themes_location_element()
 		}
 	}
 	?>
+		<label>テーマのファイルシステム上のパス
 		<input type="text" name="framexs_themes_location" id="framexs_themes_location" value="<?php echo $ftl; ?>" />
+		</label><br/>
+		<label>テーマのHTTP上のパス
+		<input type="text" name="framexs_themes_path" id="framexs_themes_path" value="<?php echo $ftp; ?>"/>
+		</label>
     <?php
 	echo $exists;
 
@@ -164,6 +170,7 @@ function install_theme_element() {
 }
 function display_properties_location_element(){
 	$pl = get_option("properties_location");
+	$pp = get_option("properties_path");
 	require_once(ABSPATH . 'wp-admin/includes/file.php');//WP_Filesystemの使用
 	$properties_array = array();
 	if ( WP_Filesystem() ) {//WP_Filesystemの初期化
@@ -176,7 +183,12 @@ function display_properties_location_element(){
 	}
 	?>
 	<div>
+		<label>プロパティズファイルのシステムの場所
 		<input type="text" name="properties_location" id="properties_location" value="<?php echo $pl;?>">
+		</label><br/>
+		<label>プロパティズファイルのHTTPの場所
+		<input type="text" name="properties_path" id="properties_path" value="<?php echo $pp;?>">
+		</label>
 	</div>
 	<p>削除するファイルにチェックを入れてください。</p>
 	<ul>
@@ -241,13 +253,15 @@ function display_theme_panel_fields()
 	add_settings_section("section", "All Settings", null, "theme-options");
 	
     add_settings_field("framexs_themes_location", "Framexs themes location", "display_framexs_themes_location_element", "theme-options", "section");
-    register_setting("section", "framexs_themes_location");
-
+	register_setting("section", "framexs_themes_location");
+	register_setting("section", "framexs_themes_path");
+	
     add_settings_field("framexs_theme", "Framexs theme", "display_theme_element", "theme-options", "section");
     register_setting("section", "framexs_theme");
 
 	add_settings_field("properties_location", "properties location", "display_properties_location_element", "theme-options", "section");
 	register_setting("section", "properties_location");
+	register_setting("section", "properties_path");
 
 	add_settings_section("test-section", "Test", null, "theme-options");
 
@@ -323,4 +337,43 @@ function manage_framexs_theme()
 	wp_die();
 }
 add_action('wp_ajax_manage', 'manage_framexs_theme');
+
+function my_widgets_init() {
+	$args  = [
+		// ウィジェットエリアの表示名を指定
+		'name' => 'ウィジェット01',
+		// ウィジェットエリアのIDを指定
+		'id' => 'widget-01',
+		// 管理画面で表示されるウィジェットエリアの説明を指定。
+        'description' => 'ウィジェット01のエリアとなります。',
+		// ウィジェットの直前に表示するHTML
+		'before_widget' => '<div id="%1$s" class="widget %2$s">',
+		// ウィジェットの直後に表示するHTML
+		'after_widget'  => '</div>',
+		// ウィジェット内のタイトルの直前に表示するHTML
+		'before_title'  => '<h2 class="widget-title">',
+		// ウィジェット内のタイトルの直後に表示するHTML
+		'after_title'   => '</h2>',
+    ];
+	register_sidebar( $args  );
+}
+add_action( 'widgets_init', 'my_widgets_init' );
+
+//wp_head()の調整
+remove_action( 'wp_head', 'feed_links', 2 ); //RSSフィード
+remove_action( 'wp_head', 'feed_links_extra', 3 ); //RSSフィード
+remove_action( 'wp_head', 'rsd_link' ); //Really Simple Discovery
+remove_action( 'wp_head', 'wlwmanifest_link' ); //Windows Live Writer
+remove_action( 'wp_head', 'index_rel_link' ); //indexへのリンク
+remove_action( 'wp_head', 'parent_post_rel_link', 10, 0 ); //分割ページへのリンク
+remove_action( 'wp_head', 'start_post_rel_link', 10, 0 ); //分割ページへのリンク
+remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0 ); //前後のページへのリンク
+remove_action( 'wp_head', 'wp_generator' ); //WordPressのバージョン
+remove_action( 'wp_head', 'print_emoji_detection_script', 7 ); //絵文字対応
+remove_action( 'admin_print_scripts', 'print_emoji_detection_script' ); //絵文字対応
+remove_action( 'wp_print_styles', 'print_emoji_styles' ); //絵文字対応
+remove_action( 'admin_print_styles', 'print_emoji_styles' ); //絵文字対応
+remove_action('wp_head','rest_output_link_wp_head'); //Embed対応
+remove_action('wp_head', 'wp_site_icon',99);
+
 ?>

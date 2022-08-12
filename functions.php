@@ -14,12 +14,11 @@ add_filter("wp_headers","xhtml");
 
 add_theme_support( 'title-tag' );
 
+//サイドバーを含んだxmlを出力する
 function sidebar() {
 $permalink = $_SERVER['REQUEST_URI'];
-error_log($permalink);
 
-if($permalink == esc_url( home_url( '/sidebar.xhtml', 'relative') )){
-//echo 'test';
+if($permalink == esc_url( home_url( get_option("sidebar_path"), 'relative') )){
 include 'sidebar.php';
 exit();
 }
@@ -29,7 +28,6 @@ add_action("init","sidebar");
 //妥当なXHTMLが出力されるように
 function xbr( $content ) {
     $content = str_replace('<br>', '<br/>', $content);
-	$content = str_replace('&nbsp;', ' ', $content);
     return $content;
 }
 add_filter('the_content', 'xbr');
@@ -243,10 +241,13 @@ function upload_properties_element(){
 	</div>
 	<?php
 }
+
+function display_sidebar_path_element() {?>
+	<div>sidebar path<input type="text" name="sidebar_path" id="sidebar_path" value="<?php echo get_option("sidebar_path");?>"></div>
+<?php }
+
 function test() {
-	?>
-	<div>test</div>
-	<?php
+	echo '<div>test</div>';
 }
 function display_theme_panel_fields()
 {
@@ -262,6 +263,10 @@ function display_theme_panel_fields()
 	add_settings_field("properties_location", "properties location", "display_properties_location_element", "theme-options", "section");
 	register_setting("section", "properties_location");
 	register_setting("section", "properties_path");
+
+	add_settings_field("sidebar_path","resource path","display_sidebar_path_element","theme-options","section");
+	register_setting("section","sidebar_path");
+
 
 	add_settings_section("test-section", "Test", null, "theme-options");
 

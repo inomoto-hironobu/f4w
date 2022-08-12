@@ -17,7 +17,7 @@ if(get_option("framexs_theme")) {
 	echo "<?xml-stylesheet type=\"application/xml\" href=\"".get_theme_file_uri("framexs.xsl")."\"?>\n";
 	echo "<?framexs.skeleton ".get_option('framexs_themes_path')."/".get_option('framexs_theme')."/main.ftml"."?>\n";
 	echo "<?framexs.properties ".get_option('properties_path')."/".$pagetype.".xml?>\n";
-	echo "<?framexs.resource sidebar ".home_url()."/sidebar.xhtml?>";
+	echo "<?framexs.resource sidebar ".esc_url( home_url( get_option("resource_path"), 'relative') )."?>\n";
 }
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" <?php language_attributes(); ?>>

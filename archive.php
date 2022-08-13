@@ -23,13 +23,15 @@ $description = get_the_archive_description();
 
 	<?php while ( have_posts() ) : ?>
 		<?php the_post(); ?>
-		<?php get_template_part( 'template-parts/content/content', get_theme_mod( 'display_excerpt_or_full_post', 'excerpt' ) ); ?>
+		<article>
+		<h2><?php the_title();?></h2>
+		
+		<?php the_excerpt(); ?>
+		</article>
 	<?php endwhile; ?>
 
-	<?php twenty_twenty_one_the_posts_navigation(); ?>
-
 <?php else : ?>
-	<?php get_template_part( 'template-parts/content/content-none' ); ?>
+	
 <?php endif; ?>
 
 <?php get_footer(); ?>

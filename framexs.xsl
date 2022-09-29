@@ -59,7 +59,7 @@ XSLTで実現するフレームワーク framexs
 	<xsl:variable name="fmxns" select="'urn:framexs'"/>
 	<xsl:variable name="fpns" select="framexs-properties"/>
 	<xsl:variable name="fcns" select="framexs-commands"/>
-	<xsl:variable name="version" select="'1.29.0'"/>
+	<xsl:variable name="version" select="'1.29.1'"/>
 	<xsl:key name="property" match="fp:property" use="@name"></xsl:key>
 	<xsl:variable name="properties" select="document($properties_loc)/fp:properties"></xsl:variable>
 
@@ -260,55 +260,24 @@ XSLTで実現するフレームワーク framexs
 			<xsl:with-param name="current" select="$current"/>
 		</xsl:apply-templates>
 	</xsl:template>
-	<!-- 
-		<framexs:if meta="test" name=""/>	は <meta name="test" content="val"/>
-		<framexs:if meta="test" property=""/>	は <meta property="test" content="val"/>
+	<!--
+		<framexs:if-meta name="test"/>	は <meta name="test" content="val"/>
+		<framexs:if-meta property="test"/>	は <meta property="test" content="val"/>
 		があれば正としてapply-templatesを発動する
 	-->
-	<xsl:template match="framexs:if[@meta]">
-		<xsl:variable name="current" select="."/>
-		<xsl:for-each select="$content/xh:html/xh:head/xh:meta[@content]">
-			<xsl:choose>
-				<xsl:when test="$current/@name and @name">
-					<xsl:choose>
-						<xsl:when test="@meta = $current/@meta and @content = $current/@content">
-							<xsl:apply-templates select="$current/node()">
-							</xsl:apply-templates>
-						</xsl:when>
-						<xsl:when test="@meta = $current/@meta and not($current/@content)">
-							<xsl:apply-templates select="$current/node()">
-							</xsl:apply-templates>
-						</xsl:when>
-					</xsl:choose>
-				</xsl:when>
-				<xsl:when test="$current/@property and @property">
-						<xsl:choose>
-						<xsl:when test="@meta = $current/@meta and @content = $current/@content">
-							<xsl:apply-templates select="$current/node()">
-							</xsl:apply-templates>
-						</xsl:when>
-						<xsl:when test="@meta = $current/@meta and not($current/@content)">
-							<xsl:apply-templates select="$current/node()">
-							</xsl:apply-templates>
-						</xsl:when>
-					</xsl:choose>
-				</xsl:when>
-			</xsl:choose>
-		</xsl:for-each>	
-	</xsl:template>
-
-	<!-- 非推奨 -->
 	<xsl:template match="framexs:if-meta[@name]">
 		<xsl:param name="properties"/>
-		<xsl:variable name="if-meta" select="."></xsl:variable>
+		<xsl:variable name="current" select="."></xsl:variable>
 		<xsl:for-each select="$content/xh:html/xh:head/xh:meta[@name and @content]">
 			<xsl:choose>
-				<xsl:when test="@name = $if-meta/@name and @content = $if-meta/@content">
-					<xsl:apply-templates select="$if-meta/node()">
+				<!-- if-metaにnameとcontentの値がある場合は、どちらも一致しているときに処理 -->
+				<xsl:when test="@name = $current/@name and @content = $current/@content">
+					<xsl:apply-templates select="$current/node()">
 					</xsl:apply-templates>
 				</xsl:when>
-				<xsl:when test="@name = $if-meta/@name and not($if-meta/@content)">
-					<xsl:apply-templates select="$if-meta/node()">
+				<!-- if-metaにnameだけある場合はnameが一致しているだけで処理-->
+				<xsl:when test="@name = $current/@name and not($current/@content)">
+					<xsl:apply-templates select="$current/node()">
 					</xsl:apply-templates>
 				</xsl:when>
 			</xsl:choose>
@@ -317,17 +286,20 @@ XSLTで実現するフレームワーク framexs
 
 	<xsl:template match="framexs:if-meta[@property]">
 		<xsl:variable name="property" select="@property"/>
-		<xsl:variable name="if-meta" select="."/>
+		<xsl:variable name="current" select="."/>
 		<xsl:for-each select="$content/xh:html/xh:head/xh:meta">
 			<xsl:choose>
-				<xsl:when test="(@property = $if-meta/@property and @content = $if-meta/@content) or (@property = $if-meta/@property and not($if-meta/@content))">
-					<xsl:apply-templates select="$if-meta/node()">
+				<xsl:when test="@property = $current/@property and @content = $current/@content">
+					<xsl:apply-templates select="$current/node()">
+					</xsl:apply-templates>
+				</xsl:when>
+				<xsl:when test="@property = $current/@property and not($current/@content)">
+					<xsl:apply-templates select="$current/node()">
 					</xsl:apply-templates>
 				</xsl:when>
 			</xsl:choose>
 		</xsl:for-each>
 	</xsl:template>
-	<!-- /非推奨 -->
 	
 	<xsl:template match="fp:properties" mode="if_property">
 		<xsl:param name="current"/>

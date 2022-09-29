@@ -113,6 +113,9 @@ function display_theme_element()
 				$dom = new SimpleXMLElement($ftml);
 				$checked = '';
 				if($theme_dir_name === get_option('framexs_theme')) {
+					$selected = 'checked=""';
+				}
+				if(get_option('abtest_theme') && in_array($item['name'],get_option("abtest_theme"),true)) {
 					$checked = 'checked=""';
 				}
 				array_push($framexs_themes, array(
@@ -120,6 +123,7 @@ function display_theme_element()
 					'name'=>$dom->infomation->name,
 					'repository'=>$dom->infomation->repository,
 					'download'=>$dom->infomation->download,
+					'selected'=>$selected,
 					'checked'=>$checked
 				));
 			}
@@ -127,11 +131,15 @@ function display_theme_element()
 	}
 	?>
 		<div>
+			
 			<ul>
 			<?php foreach($framexs_themes as $framexs_theme) {
 			?>
 				<li>
-					<div><input type="radio" name="framexs_theme" id="framexs_theme" value="<?php echo $framexs_theme['dir']; ?>" <?php echo $framexs_theme['checked']?> /></div>
+					<div>
+						<input type="radio" name="framexs_theme" id="framexs_theme" value="<?php echo $framexs_theme['dir']; ?>" <?php echo $framexs_theme['selected']?> />
+						<input type="checkbox" name="abtest_theme[]" id="abtest_theme[]" value="<?php echo $framexs_theme['dir'];?>" <?php echo $framexs_theme['checked']?> />
+					</div>
 					<div class="text">
 						<div class="name"><?php echo $framexs_theme['name'];?></div>
 						<div class="description"></div>
@@ -241,7 +249,17 @@ function upload_properties_element(){
 	</div>
 	<?php
 }
-
+function display_abtest_element(){?>
+	<div>
+		<p>AB Testを実施する。</p>
+		<?php
+			$checked = '';
+			if(in_array("action",get_option("abtest"),true) == 1) {
+				$checked = 'checked=""';
+			}
+		?>
+		<input type="checkbox" name="abtest[]" id="abtest[]" value="action" <?php echo $checked;?>></div>
+<?php }
 function display_sidebar_path_element() {?>
 	<div>sidebar path<input type="text" name="sidebar_path" id="sidebar_path" value="<?php echo get_option("sidebar_path");?>"></div>
 <?php }
@@ -259,6 +277,10 @@ function display_theme_panel_fields()
 	
     add_settings_field("framexs_theme", "Framexs theme", "display_theme_element", "theme-options", "section");
     register_setting("section", "framexs_theme");
+	register_setting("section", "abtest_theme");
+
+	add_settings_field("abtest", "AB Test", "display_abtest_element", "theme-options", "section");
+	register_setting("section", "abtest");
 
 	add_settings_field("properties_location", "properties location", "display_properties_location_element", "theme-options", "section");
 	register_setting("section", "properties_location");
@@ -266,7 +288,6 @@ function display_theme_panel_fields()
 
 	add_settings_field("sidebar_path","resource path","display_sidebar_path_element","theme-options","section");
 	register_setting("section","sidebar_path");
-
 
 	add_settings_section("test-section", "Test", null, "theme-options");
 
@@ -346,11 +367,11 @@ add_action('wp_ajax_manage', 'manage_framexs_theme');
 function my_widgets_init() {
 	$args  = [
 		// ウィジェットエリアの表示名を指定
-		'name' => 'ウィジェット01',
+		'name' => 'サイドバー1ワイド',
 		// ウィジェットエリアのIDを指定
-		'id' => 'widget-01',
+		'id' => 'sidebar1-wide',
 		// 管理画面で表示されるウィジェットエリアの説明を指定。
-        'description' => 'ウィジェット01のエリアとなります。',
+        'description' => 'サイドバーのエリアとなります。',
 		// ウィジェットの直前に表示するHTML
 		'before_widget' => '<div id="%1$s" class="widget %2$s">',
 		// ウィジェットの直後に表示するHTML

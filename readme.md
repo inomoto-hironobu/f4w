@@ -1,4 +1,4 @@
-Framexs for WordPress
+F4W
 ---
 Framexsを使うためのWordPressテーマです。
 

@@ -18,7 +18,7 @@ if(get_option("framexs_theme")) {
 	echo "<?xml-stylesheet type=\"application/xml\" href=\"".get_theme_file_uri("framexs.xsl")."\"?>\n";
 	$theme = get_option('framexs_theme');
 	
-	if(in_array("action",get_option("abtest"),true) == 1) {
+	if(get_option("abtest") == 'on') {
 		//cookieに'framexs'が設定されていて
 		if(isset($_COOKIE["framexs"])
 		//'framexsrand'がパラメータにない
@@ -43,7 +43,7 @@ if(get_option("framexs_theme")) {
 <head>
 <?php
 if($theme){
-	echo "<meta property=\"framexs-theme\" content=\"".$theme."\"/>";
+	echo "<meta property=\"framexs-theme\" content=\"".$theme."\"/>\n";
 }
 wp_head();?>
 </head>

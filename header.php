@@ -18,7 +18,19 @@ if(get_option("framexs_theme")) {
 	echo "<?xml-stylesheet type=\"application/xml\" href=\"".get_theme_file_uri("framexs.xsl")."\"?>\n";
 	$theme = get_option('framexs_theme');
 	
+	
 	if(get_option("abtest") == 'on') {
+		if(isset($_GET["theme"])) {//まずURLパラメータにテーマが指定されていればそれを使う
+			if(in_array($_GET["theme"],get_option("abtest_theme"),true)) {
+				$theme = $_GET["theme"];
+			} else {
+				//指定されたテーマが存在しないならランダムに選ぶ
+				$len = count(get_option("abtest_theme"));
+				$i = mt_rand(0,$len -1);
+				$theme = get_option("abtest_theme")[$i];
+				setcookie("framexs", $theme);
+			}
+		} else 
 		//cookieに'framexs'が設定されていて
 		if(isset($_COOKIE["framexs"])
 		//'framexsrand'がパラメータにない

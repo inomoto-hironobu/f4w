@@ -55,7 +55,7 @@ if(get_option("framexs_theme")) {
 <head>
 <?php
 if($theme){
-	echo "<meta property=\"framexs-theme\" content=\"".$theme."\"/>\n";
+	echo "<meta name=\"framexs-theme\" content=\"".$theme."\"/>\n";
 }
 wp_head();?>
 </head>

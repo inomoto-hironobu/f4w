@@ -105,14 +105,15 @@ function display_theme_element()
 		global $wp_filesystem;//$wp_filesystemオブジェクトの呼び出し
 		$exists = '';
 		foreach($wp_filesystem->dirlist($ftl) as $item){
-			$theme_dir_name = $item['name'];
+			$theme_dir_name = $item['name'];//
 			$theme_location = $ftl.'/'.$theme_dir_name;
 			$ftml_location = $theme_location.'/main.ftml';
 			if($wp_filesystem->exists($ftml_location)){
 				$ftml = $wp_filesystem->get_contents($ftml_location);
 				$dom = new SimpleXMLElement($ftml);
+				$selected = '';
 				$checked = '';
-				if($theme_dir_name === get_option('framexs_theme')) {
+				if($theme_dir_name === get_option('framexs_theme')) {//テーマが一致するならcheckedをつける
 					$selected = 'checked=""';
 				}
 				if(get_option('abtest_theme') && in_array($item['name'],get_option("abtest_theme"),true)) {
@@ -138,6 +139,7 @@ function display_theme_element()
 				<li>
 					<div>
 						<input type="radio" name="framexs_theme" id="framexs_theme" value="<?php echo $framexs_theme['dir']; ?>" <?php echo $framexs_theme['selected']?> />
+						
 						<input type="checkbox" name="abtest_theme[]" id="abtest_theme[]" value="<?php echo $framexs_theme['dir'];?>" <?php echo $framexs_theme['checked']?> />
 					</div>
 					<div class="text">
@@ -251,14 +253,20 @@ function upload_properties_element(){
 }
 function display_abtest_element(){?>
 	<div>
-		<p>AB Testを実施する。</p>
+		<p>AB Testモード</p>
 		<?php
-			$checked = '';
-			if(in_array("action",get_option("abtest"),true) == 1) {
-				$checked = 'checked=""';
+			$on = '';
+			$off = '';
+			if(get_option('abtest') == 'on') {
+				$on = 'checked=""';
+			} else {
+				$off = 'checked=""';
 			}
+			
 		?>
-		<input type="checkbox" name="abtest[]" id="abtest[]" value="action" <?php echo $checked;?>></div>
+		on:<input type="radio" name="abtest" id="abtest" value="on" <?php echo $on;?>>
+		off:<input type="radio" name="abtest" id="abtest" value="off" <?php echo $off;?>>
+	</div>
 <?php }
 function display_sidebar_path_element() {?>
 	<div>sidebar path<input type="text" name="sidebar_path" id="sidebar_path" value="<?php echo get_option("sidebar_path");?>"></div>
